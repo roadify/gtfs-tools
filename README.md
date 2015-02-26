@@ -23,7 +23,7 @@ After a GTFS feed has been initialized, it can be updated by running the followi
 
 The `gtfs-update` tool can also be used to update a feed from a file:
 
-    $ gtfs-update --name Example --file /path/to/acme/google_transit.zip
+    $ gtfs-update --name Example --file /path/to/example/google_transit.zip
 
 You can pass a URL to `gtfs-update` as well:
 
