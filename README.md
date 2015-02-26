@@ -14,6 +14,11 @@ The `gtfs-update` tool is broken down into three components which may be run ind
 
 The `gtfs-continue` tool is identical to `gtfs-update` except that it does not include the `gtfs-download` step.
 
+For best results, add this project's **bin** directory to your *PATH*. This is best done in your **~/.bash_profile**
+or similar, and looks something like this:
+
+    export PATH="/path/to/gtfs-tools/bin:${PATH}"
+
 ## Examples
 
 Initializing a GTFS feed:
