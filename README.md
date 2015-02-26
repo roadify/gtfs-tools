@@ -44,8 +44,8 @@ These tools, when run, will create the following directory structure within the 
        * `extracted/`: This directory holds GTFS files that have finished being extracted.
        * `processing/`: This directory holds GTFS files that are being processed.
        * `processed/`: This directory holds GTFS files that have finished processing.
-    * `database`: This file is the raw SQLite database.
-    * `database-journal`: This temporary file is the journal for the raw SQLite database.
+    * `database`: This file is a raw SQLite database containing the feed's data.
+    * `database-journal`: This temporary file is created by SQLite while the database is open.
     * `url`: This file contains the most recently used URL for downloading this feed.
 
 You can specify an alternate workspace location by passing the `--workspace PATH` flag.
