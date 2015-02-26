@@ -15,19 +15,19 @@ or similar, and looks something like this:
 
 Initializing a GTFS feed:
 
-    $ gtfs-init --name ACME --url http://www.acme.com/gtfs/google_transit.zip
+    $ gtfs-init --name Example --url http://www.example.com/gtfs/google_transit.zip
 
 After a GTFS feed has been initialized, it can be updated by running the following command:
 
-    $ gtfs-update --name ACME
+    $ gtfs-update --name Example
 
 The `gtfs-update` tool can also be used to update a feed from a file:
 
-    $ gtfs-update --name ACME --file /path/to/acme/google_transit.zip
+    $ gtfs-update --name Example --file /path/to/acme/google_transit.zip
 
 You can pass a URL to `gtfs-update` as well:
 
-    $ gtfs-update --name ACME --url http://alternate.acme.com/gtfs/google_transit.zip
+    $ gtfs-update --name Example --url http://alternate.example.com/gtfs/google_transit.zip
 
 If feed processing fails or is aborted for whatever reason, it can be continued like this:
 
@@ -36,7 +36,7 @@ If feed processing fails or is aborted for whatever reason, it can be continued 
 If you are processing multiple feeds within the same workspace and want to restrict which feeds
 get continued, you may specify a `--name NAME` parameter:
 
-    $ gtfs-continue --name ACME
+    $ gtfs-continue --name Example
 
 ## Output
 
