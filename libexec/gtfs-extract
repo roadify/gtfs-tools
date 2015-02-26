@@ -5,7 +5,7 @@ function read_options() {
   while [ ${has_more_options} -a $# -gt 0 ]; do
     arg="$1"
     case "${arg}" in
-      -d|--database)
+      -n|--name)
         shift
         given_database_name="$1"
         ;;
