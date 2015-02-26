@@ -1,5 +1,7 @@
 #!/bin/bash
 
+GTFS_TOOLS_LIBEXEC_DIR="$(cd $(dirname $0) && pwd)"
+
 function read_options() {
   has_more_options=1
   while [ ${has_more_options} -a $# -gt 0 ]; do
@@ -25,8 +27,6 @@ read_options $*
 
 [ -z "${WORKSPACE_DIR}" ] && WORKSPACE_DIR="$(pwd)"
 
-BIN_DIR="$(cd $(dirname $0);pwd)"
-LIBEXEC_DIR="$(cd $(dirname ${BIN_DIR});pwd)/libexec"
 DATABASES_DIR="${WORKSPACE_DIR}"
 
 (
@@ -65,7 +65,7 @@ DATABASES_DIR="${WORKSPACE_DIR}"
               mv "${extracted_file}" "${processing_file}"
               (
                 cd "${WORKSPACE_DIR}"
-                ( "${LIBEXEC_DIR}/gtfs-process.rb" "${database_name}" && mv "${processing_file}" "${processed_file}" ) || mv "${processing_file}" "${extracted_file}"
+                ( "${GTFS_TOOLS_LIBEXEC_DIR}/gtfs-process.rb" "${database_name}" && mv "${processing_file}" "${processed_file}" ) || mv "${processing_file}" "${extracted_file}"
               )
             done
 

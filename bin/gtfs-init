@@ -1,5 +1,12 @@
 #!/bin/bash
 
+GTFS_TOOLS_BIN_DIR="$(cd $(dirname $0) && pwd)"
+GTFS_TOOLS_DIR="$(dirname ${GTFS_TOOLS_BIN_DIR})"
+GTFS_TOOLS_LIBEXEC_DIR="${GTFS_TOOLS_DIR}/libexec"
+GTFS_TOOLS_LIB_DIR="${GTFS_TOOLS_DIR}/lib"
+
+"${GTFS_TOOLS_LIBEXEC_DIR}/gtfs-dependencies" || exit 1
+
 function print_usage() {
   cat << EOF
 ===============================================================================

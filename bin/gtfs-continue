@@ -6,6 +6,5 @@ GTFS_TOOLS_LIBEXEC_DIR="${GTFS_TOOLS_DIR}/libexec"
 GTFS_TOOLS_LIB_DIR="${GTFS_TOOLS_DIR}/lib"
 
 "${GTFS_TOOLS_LIBEXEC_DIR}/gtfs-dependencies" || exit 1
-"${GTFS_TOOLS_LIBEXEC_DIR}/gtfs-download" $* || exit 1
 "${GTFS_TOOLS_LIBEXEC_DIR}/gtfs-extract" $* || exit 1
 "${GTFS_TOOLS_LIBEXEC_DIR}/gtfs-process" $* || exit 1

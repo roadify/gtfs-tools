@@ -4,12 +4,15 @@ This suite consists of the following tools for use in consuming GTFS feeds:
 
  * `gtfs-init`: Initializes a new GTFS feed configuration.
  * `gtfs-update`: Downloads a GTFS feed, extracts it, then imports it into a local SQLite database.
+ * `gtfs-continue`: Continues a previously started GTFS feed update.
 
 The `gtfs-update` tool is broken down into three components which may be run individually:
 
  * `gtfs-download`: Downloads a GTFS feed from its URL, or from an alternate URL or file, if given.
  * `gtfs-extract`: Extracts a downloaded GTFS feed.
  * `gtfs-process`: Processes the extracted files from a GTFS feed, saving them into the feed's database.
+
+The `gtfs-continue` tool is identical to `gtfs-update` except that it does not include the `gtfs-download` step.
 
 ## Examples
 
@@ -29,11 +32,28 @@ You can pass a URL to `gtfs-update` as well:
 
     $ gtfs-update --name ACME --url http://alternate.acme.com/gtfs/google_transit.zip
 
+If feed processing fails or is aborted for whatever reason, it can be continued like this:
+
+    $ gtfs-continue
+
+If you are processing multiple feeds within the same workspace and want to restrict which feeds
+get continued, you may specify a `--name NAME` parameter:
+
+    $ gtfs-continue --name ACME
+
+## Output
+
+The end result of processing a GTFS feed is a SQLite database containing the GTFS feed data. This
+database can then be imported into a mobile application, used as a data source for your own transit API,
+or queried by any standard SQL tools capable of connecting to a SQLite database.
+
+The database can be found in the workspace, at `{feed_name}/database`.
+
 ## Workspace Layout
 
 These tools, when run, will create the following directory structure within the directory in which the tool is run:
 
- * `{database_name}/`: This directory holds all data relevant to the named database.
+ * `{feed_name}/`: This directory holds all data relevant to the named feed.
     * `files/`: This directory holds the downloaded GTFS feed and its extracted raw files.
        * `downloading/`: This directory holds GTFS files that are in the process of downloading.
          * `{timestamp}.zip`: The file being downloaded.

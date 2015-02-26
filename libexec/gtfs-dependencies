@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function gtfs_dependencies() {
+  MISSING=""
+  while [ $# -gt 0 ]; do
+    if [ ! -x "$(which $1)" ]; then
+      [ -n "${MISSING}" ] && MISSING="${MISSING}\x1B[2m,\x1B[0m "
+      MISSING="${MISSING}$1"
+    fi
+    shift
+  done
+  if [ -n "${MISSING}" ]; then
+    printf "\x1B[2mSome dependencies are missing:\x1B[0m ${MISSING}\n"
+    printf "\x1B[2mPlease install these dependencies before continuing.\x1B[0m\n"
+    exit 1
+  fi
+}
+
+gtfs_dependencies openssl ruby unzip
