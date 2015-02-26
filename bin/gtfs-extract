@@ -1,0 +1,87 @@
+#!/bin/bash
+
+function read_options() {
+  has_more_options=1
+  while [ ${has_more_options} -a $# -gt 0 ]; do
+    arg="$1"
+    case "${arg}" in
+      -d|--database)
+        shift
+        given_database_name="$1"
+        ;;
+      -w|--workspace)
+        shift
+        WORKSPACE_DIR="$( cd $1; pwd )"
+        ;;
+      --)
+        has_more_options=0
+        ;;
+    esac
+    shift
+  done
+}
+
+read_options $*
+
+[ -z "${WORKSPACE_DIR}" ] && WORKSPACE_DIR="$(pwd)"
+
+DATABASES_DIR="${WORKSPACE_DIR}"
+
+(
+
+  cd "${DATABASES_DIR}"
+
+  for database_dir in $(find . -type d -depth 1|xargs); do
+
+    if [ -d "${database_dir}" ]; then
+
+      database_name="$(basename ${database_dir})"
+
+      if [ -z "${given_database_name}" -o "${database_name}" = "${given_database_name}" ]; then
+
+        DATABASE_DIR="${DATABASES_DIR}/${database_name}"
+        DATABASE_FILES_DIR="${DATABASE_DIR}/files"
+        DOWNLOADED_DIR="${DATABASE_FILES_DIR}/downloaded"
+        EXTRACTING_DIR="${DATABASE_FILES_DIR}/extracting"
+        EXTRACTED_DIR="${DATABASE_FILES_DIR}/extracted"
+
+        if [ -d "${DOWNLOADED_DIR}" ]; then
+
+          (
+
+            cd "${DOWNLOADED_DIR}"
+
+            for file in $(find . -type f -name '*.zip' -depth 1|sort|xargs); do
+
+              if [ -f "${file}" ]; then
+
+                mkdir -p "${EXTRACTING_DIR}" "${EXTRACTED_DIR}"
+
+                printf "\x1B[2mextract\x1B[0m \x1B[1m${database_name}\x1B[0m \x1B[2m<-\x1B[0m \x1B[33m$(basename ${file})\x1B[0m\n"
+
+                mv "${file}" "${EXTRACTING_DIR}/" && \
+                (
+                  (
+                    cd "${EXTRACTING_DIR}" && \
+                    unzip -qq "${file}" && \
+                    mv *.txt "${EXTRACTED_DIR}/" && \
+                    rm -f ./*
+                  ) || \
+                  mv "${EXTRACTING_DIR}/${file}" "${DOWNLOADED_DIR}/"
+                )
+
+              fi
+
+            done
+
+          )
+
+        fi
+
+      fi
+
+    fi
+
+  done
+
+)

@@ -1,0 +1,102 @@
+#!/bin/bash
+
+function print_usage() {
+  cat << EOF
+===============================================================================
+ USAGE: $0 [options]
+-------------------------------------------------------------------------------
+
+ OPTIONS:
+
+   -u                                    The URL of the GTFS feed to download.
+   --url URL                         Either a URL or a file must be specified.
+
+   -f                   The path to a local copy of the GTFS feed to download.
+   --file FILE                       Either a URL or a file must be specified.
+
+   -n                                     The name of the GTFS feed to update.
+   --name NAME             If no name is given, defaults to a hash of the URL.
+
+   -w                 The path to the workspace to use for storing GTFS files.
+   --workspace PATH                         Defaults to the current directory.
+
+===============================================================================
+EOF
+  exit 1
+}
+
+function read_options() {
+  has_more_options=1
+  while [ ${has_more_options} -a $# -gt 0 ]; do
+    arg="$1"
+    case "${arg}" in
+      -u|--url)
+        shift
+        source_url="$1"
+        ;;
+      -n|--name)
+        shift
+        database_name="$1"
+        ;;
+      -f|--file)
+        shift
+        source_file="$1"
+        ;;
+      -w|--workspace)
+        shift
+        WORKSPACE_DIR="$( cd $1; pwd )"
+        ;;
+      --)
+        has_more_options=0
+        ;;
+    esac
+    shift
+  done
+}
+
+read_options $*
+
+[ -z "${WORKSPACE_DIR}" ] && WORKSPACE_DIR="$(pwd)"
+[ -n "${database_name}" ] && URL_CACHE="${WORKSPACE_DIR}/${database_name}/url"
+[ -n "${URL_CACHE}" -a -f "${URL_CACHE}" ] && cached_url="$(cat ${URL_CACHE})"
+
+[ -z "${source_url}" -a -z "${source_file}" -a -n "${cached_url}" ] && source_url="${cached_url}"
+
+[ -z "${source_url}" -a -z "${source_file}" ] && print_usage
+[ -z "${source_url}" -a -z "${database_name}" ] && print_usage
+
+[ -n "${source_url}" -a -z "${database_name}" ] && database_name=$(printf "${source_url}" | openssl dgst -sha1 -binary | openssl base64 | tr '+' '-' | tr '/' '_')
+
+DATABASES_DIR="${WORKSPACE_DIR}"
+DATABASE_DIR="${DATABASES_DIR}/${database_name}"
+DATABASE_FILES_DIR="${DATABASE_DIR}/files"
+DOWNLOADING_DIR="${DATABASE_FILES_DIR}/downloading"
+DOWNLOADED_DIR="${DATABASE_FILES_DIR}/downloaded"
+
+[ -z "${URL_CACHE}" ] && URL_CACHE="${DATABASE_DIR}/url"
+[ -n "${URL_CACHE}" -a -f "${URL_CACHE}" ] && cached_url="$(cat ${URL_CACHE})"
+
+timestamp="$(date -u '+%FT%TZ'|tr ':' '.')"
+file_name="${timestamp}.zip"
+
+mkdir -p "${DOWNLOADING_DIR}" "${DOWNLOADED_DIR}" || exit 1
+rm -f "${DOWNLOADING_DIR}/${file_name}" || exit 1
+
+if [ -n "${source_url}" ]; then
+  if [ -f "${URL_CACHE}" ]; then
+    cached_url="$(cat ${URL_CACHE})"
+    [ "${source_url}" = "${cached_url}" ] || rm -f "${URL_CACHE}"
+  fi
+  [ -f "${URL_CACHE}" ] || printf "${source_url}" > "${URL_CACHE}"
+fi
+
+if [ -n "${source_file}" -a -f "${source_file}" ]; then
+  printf "\x1B[2mdownload\x1B[0m \x1B[1m${database_name}\x1B[0m \x1B[2m<-\x1B[0m \x1B[33m${source_file}\x1B[0m\n"
+  cp "${source_file}" "${DOWNLOADING_DIR}/${file_name}" || exit 1
+else
+  printf "\x1B[2mdownload\x1B[0m \x1B[1m${database_name}\x1B[0m \x1B[2m<-\x1B[0m \x1B[36m${source_url}\x1B[0m\n"
+  curl -sSL -o "${DOWNLOADING_DIR}/${file_name}" "${source_url}" || exit 1
+fi
+
+mv "${DOWNLOADING_DIR}/${file_name}" "${DOWNLOADED_DIR}/"
+openssl sha1 -binary "${DOWNLOADED_DIR}/${file_name}" > "${DOWNLOADED_DIR}/${file_name}.sha1"

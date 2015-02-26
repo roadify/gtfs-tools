@@ -1,0 +1,7 @@
+#!/bin/bash
+
+BIN_DIR="$(dirname $0)"
+
+"${BIN_DIR}/gtfs-download" $* || exit 1
+"${BIN_DIR}/gtfs-extract" $* || exit 1
+"${BIN_DIR}/gtfs-process" $* || exit 1
