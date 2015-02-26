@@ -6,14 +6,6 @@ This suite consists of the following tools for use in consuming GTFS feeds:
  * `gtfs-update`: Downloads a GTFS feed, extracts it, then imports it into a local SQLite database.
  * `gtfs-continue`: Continues a previously started GTFS feed update.
 
-The `gtfs-update` tool is broken down into three components which may be run individually:
-
- * `gtfs-download`: Downloads a GTFS feed from its URL, or from an alternate URL or file, if given.
- * `gtfs-extract`: Extracts a downloaded GTFS feed.
- * `gtfs-process`: Processes the extracted files from a GTFS feed, saving them into the feed's database.
-
-The `gtfs-continue` tool is identical to `gtfs-update` except that it does not include the `gtfs-download` step.
-
 For best results, add this project's **bin** directory to your *PATH*. This is best done in your **~/.bash_profile**
 or similar, and looks something like this:
 
